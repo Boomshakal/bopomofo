@@ -47,14 +47,14 @@
   margin-bottom: 1.5rem;
 }
 
-.mode-buttons {
+.mode-buttons, .time-buttons {
   display: flex;
   justify-content: center;
   gap: 1rem;
   margin-bottom: 2rem;
 }
 
-.mode-buttons button {
+.mode-buttons button, .time-buttons button {
   background-color: #4a6fa5;
   color: white;
   border: none;
@@ -65,9 +65,18 @@
   transition: background-color 0.3s, transform 0.2s;
 }
 
-.mode-buttons button:hover {
+.mode-buttons button:hover, .time-buttons button:hover {
   background-color: #3a5a8c;
   transform: translateY(-2px);
+}
+
+.time-settings {
+  margin-top: 1.5rem;
+}
+
+.time-buttons button.active {
+  background-color: #2c4870;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 .last-score {
@@ -97,10 +106,20 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.score-info, .timer {
+.score-info {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.symbol-info p {
+  margin: 4px 0;
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .score-info p, .timer p {
@@ -111,6 +130,21 @@
 .timer p {
   color: #e74c3c;
   font-weight: 700;
+}
+
+.time-adjust-btn {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.9rem;
+  background-color: #4a6fa5;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.time-adjust-btn:hover {
+  background-color: #3a5a8c;
 }
 
 /* 打字区域 */
@@ -268,52 +302,48 @@
   border: 1px solid #ddd;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.2s;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
 }
 
 /* 为不同手指设置不同颜色 */
 /* 左手小指 */
 .keyboard-key.left-pinky {
-  background-color: #FFD6D6; /* 浅红色 */
+  background-color: #D6FFD6 !important; /* 浅绿色 */
 }
 
-/* 左手无名指 */
 .keyboard-key.left-ring {
-  background-color: #D6EAFF; /* 浅蓝色 */
+  background-color: #D6EAFF !important; /* 浅蓝色 */
 }
 
-/* 左手中指 */
 .keyboard-key.left-middle {
-  background-color: #FFF7D6; /* 浅黄色 */
+  background-color: #FFF7D6 !important; /* 浅黄色 */
 }
 
-/* 左手食指 */
 .keyboard-key.left-index {
-  background-color: #FFD6F5; /* 浅紫色 */
+  background-color: #FFD6D6 !important; /* 浅红色 */
 }
 
-/* 右手食指 */
 .keyboard-key.right-index {
-  background-color: #D6FFD6; /* 浅绿色 */
+  background-color: #FFD6D6 !important; /* 浅红色 */
 }
 
-/* 右手中指 */
 .keyboard-key.right-middle {
-  background-color: #FFF7D6; /* 浅黄色 */
+  background-color: #FFF7D6 !important; /* 浅黄色 */
 }
 
-/* 右手无名指 */
 .keyboard-key.right-ring {
-  background-color: #D6EAFF; /* 浅蓝色 */
+  background-color: #D6EAFF !important; /* 浅蓝色 */
 }
 
-/* 右手小指 */
 .keyboard-key.right-pinky {
-  background-color: #FFD6D6; /* 浅红色 */
+  background-color: #D6FFD6 !important; /* 浅绿色 */
 }
 
-/* 右手拇指 */
 .keyboard-key.right-thumb {
-  background-color: #D6FFFF; /* 浅青色 */
+  background-color: #FFFFFF !important; /* 白色 */
 }
 
 .keyboard-key.active {

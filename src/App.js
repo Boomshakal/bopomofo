@@ -71,8 +71,9 @@ function App() {
   const [totalAttempts, setTotalAttempts] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
   const [gameStarted, setGameStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60); // 60秒倒计时
+  const [timeLeft, setTimeLeft] = useState(180); // 180秒倒计时
   const [gameMode, setGameMode] = useState('practice'); // 'practice' 或 'test'
+  const [gameDuration, setGameDuration] = useState(180); // 游戏时长设置，默认180秒
 
   // 使用gameMode变量
   useEffect(() => {
@@ -94,7 +95,7 @@ function App() {
     setScore(0);
     setTotalAttempts(0);
     setAccuracy(100);
-    setTimeLeft(60);
+    setTimeLeft(gameDuration);
     setCurrentSymbol(generateRandomSymbol());
     setUserInput('');
   };
@@ -202,26 +203,22 @@ function App() {
   // 键盘布局定义
   const keyboardLayout = [
     // 第一行 - 数字键
-    ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='],
+    ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-'],
     // 第二行 - QWERTY
-    ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']'],
+    ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
     // 第三行 - ASDFGHJKL
-    ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\''],
+    ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';'],
     // 第四行 - ZXCVBNM
     ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/']
   ];
   
   // 标点符号映射
   const punctuationMap = {
-    '-': '—',
-    '=': '＝',
-    '[': '「',
-    ']': '」',
-    "'": "'",
-    ';': '；',
-    ',': '，',
-    '.': '。',
-    '/': '、'
+    '-': 'ㄦ',
+    ';': 'ㄤ',
+    ',': 'ㄝ',
+    '.': 'ㄡ',
+    '/': 'ㄥ'
   };
 
   // 查找键对应的注音符号 - 使用标准注音键盘布局
@@ -365,6 +362,15 @@ function App() {
               <button onClick={() => startGame('practice')}>练习模式</button>
               <button onClick={() => startGame('test')}>测试模式</button>
             </div>
+            <div className="time-settings">
+              <h3>选择游戏时长</h3>
+              <div className="time-buttons">
+                <button onClick={() => setGameDuration(60)} className={gameDuration === 60 ? 'active' : ''}>1分钟</button>
+                <button onClick={() => setGameDuration(120)} className={gameDuration === 120 ? 'active' : ''}>2分钟</button>
+                <button onClick={() => setGameDuration(180)} className={gameDuration === 180 ? 'active' : ''}>3分钟</button>
+                <button onClick={() => setGameDuration(300)} className={gameDuration === 300 ? 'active' : ''}>5分钟</button>
+              </div>
+            </div>
             {totalAttempts > 0 && (
               <div className="last-score">
                 <h3>上次成绩</h3>
@@ -382,6 +388,10 @@ function App() {
               </div>
               <div className="timer">
                 <p>剩余时间: {timeLeft}秒</p>
+                <button className="time-adjust-btn" onClick={() => {
+                  // 暂停游戏并显示时间调整对话框
+                  setGameStarted(false);
+                }}>调整时间</button>
               </div>
             </div>
 
@@ -392,6 +402,7 @@ function App() {
                     <div className="symbol-display">{currentSymbol.symbol}</div>
                     <div className="symbol-info">
                       <p>输入: {getKeyForSymbol(currentSymbol.symbol)}</p>
+                      <p>发音: {currentSymbol.key}</p>  {/* 新增发音提示 */}
                     </div>
                   </>
                 )}
@@ -419,13 +430,13 @@ function App() {
                        // 根据键位确定手指类别
                        let fingerClass = '';
                        if (rowIndex === 0) { // 第一行 - 数字键
-                         if (keyIndex <= 1) fingerClass = 'left-pinky';
-                         else if (keyIndex === 2) fingerClass = 'left-ring';
-                         else if (keyIndex === 3) fingerClass = 'left-middle';
-                         else if (keyIndex === 4 || keyIndex === 5) fingerClass = 'left-index';
-                         else if (keyIndex === 6 || keyIndex === 7) fingerClass = 'right-index';
-                         else if (keyIndex === 8) fingerClass = 'right-middle';
-                         else if (keyIndex === 9) fingerClass = 'right-ring';
+                         if (keyIndex === 0) fingerClass = 'left-pinky';
+                         else if (keyIndex === 1) fingerClass = 'left-ring';
+                         else if (keyIndex === 2) fingerClass = 'left-middle';
+                         else if (keyIndex === 3 || keyIndex === 4) fingerClass = 'left-index';
+                         else if (keyIndex === 5 || keyIndex === 6) fingerClass = 'right-index';
+                         else if (keyIndex === 7) fingerClass = 'right-middle';
+                         else if (keyIndex === 8) fingerClass = 'right-ring';
                          else fingerClass = 'right-pinky';
                        } else if (rowIndex === 1) { // 第二行 - QWERTY
                          if (keyIndex === 0) fingerClass = 'left-pinky';
