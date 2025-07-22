@@ -64,39 +64,81 @@ function App() {
     ...bopomofoData.tones.filter(tone => tone.symbol !== '')
   ];
 
+  // 汉字练习数据
+  const chineseCharacters = [
+    { character: '的', pinyin: 'de', bopomofo: 'ㄉㄜ' },
+    { character: '一', pinyin: 'yi', bopomofo: 'ㄧ' },
+    { character: '是', pinyin: 'shi', bopomofo: 'ㄕˋ' },
+    { character: '在', pinyin: 'zai', bopomofo: 'ㄗㄞˋ' },
+    { character: '不', pinyin: 'bu', bopomofo: 'ㄅㄨˋ' },
+    { character: '了', pinyin: 'le', bopomofo: 'ㄌㄜˋ' },
+    { character: '有', pinyin: 'you', bopomofo: 'ㄧㄡˇ' },
+    { character: '人', pinyin: 'ren', bopomofo: 'ㄖㄣˊ' },
+    { character: '这', pinyin: 'zhe', bopomofo: 'ㄓㄜˋ' },
+    { character: '他', pinyin: 'ta', bopomofo: 'ㄊㄚ' },
+    { character: '来', pinyin: 'lai', bopomofo: 'ㄌㄞˊ' },
+    { character: '上', pinyin: 'shang', bopomofo: 'ㄕㄜˊ' },
+    { character: '个', pinyin: 'ge', bopomofo: 'ㄍㄜˋ' },
+    { character: '们', pinyin: 'men', bopomofo: 'ㄇㄣˊ' },
+    { character: '中', pinyin: 'zhong', bopomofo: 'ㄓㄨㄥˊ' },
+    { character: '为', pinyin: 'wei', bopomofo: 'ㄨㄟˊ' },
+    { character: '和', pinyin: 'he', bopomofo: 'ㄏㄜˊ' },
+    { character: '国', pinyin: 'guo', bopomofo: 'ㄍㄨㄛˊ' },
+    { character: '我', pinyin: 'wo', bopomofo: 'ㄨㄛˇ' },
+    { character: '你', pinyin: 'ni', bopomofo: 'ㄋㄧˇ' },
+    { character: '他', pinyin: 'ta', bopomofo: 'ㄊㄚ' },
+    { character: '很', pinyin: 'hen', bopomofo: 'ㄏㄣˇ' },
+    { character: '好', pinyin: 'hao', bopomofo: 'ㄏㄠˇ' },
+    { character: '吗', pinyin: 'ma', bopomofo: 'ㄇㄚ˙' },
+    { character: '呢', pinyin: 'ne', bopomofo: 'ㄋㄜ˙' },
+    { character: '啊', pinyin: 'a', bopomofo: 'ㄚ' },
+    { character: '呀', pinyin: 'ya', bopomofo: 'ㄧㄚ' },
+    { character: '哦', pinyin: 'o', bopomofo: 'ㄛ' },
+    { character: '嗯', pinyin: 'en', bopomofo: 'ㄣ' },
+  ];
+
   // 状态
   const [currentSymbol, setCurrentSymbol] = useState(null);
+  const [currentCharacter, setCurrentCharacter] = useState(null);
   const [userInput, setUserInput] = useState('');
   const [score, setScore] = useState(0);
   const [totalAttempts, setTotalAttempts] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
   const [gameStarted, setGameStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(180); // 180秒倒计时
-  const [gameMode, setGameMode] = useState('practice'); // 'practice' 或 'test'
+  
   const [gameDuration, setGameDuration] = useState(180); // 游戏时长设置，默认180秒
+  const [practiceType, setPracticeType] = useState('bopomofo'); // 'bopomofo' 或 'chinese'
 
-  // 使用gameMode变量
-  useEffect(() => {
-    if (gameStarted) {
-      console.log(`当前模式: ${gameMode}`);
+  
+
+  // 生成随机符号或汉字
+  const generateRandomItem = (type) => {
+    if (type === 'bopomofo') {
+      const randomIndex = Math.floor(Math.random() * allSymbols.length);
+      return allSymbols[randomIndex];
+    } else {
+      const randomIndex = Math.floor(Math.random() * chineseCharacters.length);
+      return chineseCharacters[randomIndex];
     }
-  }, [gameStarted, gameMode]);
+}
 
-  // 生成随机符号
-  const generateRandomSymbol = () => {
-    const randomIndex = Math.floor(Math.random() * allSymbols.length);
-    return allSymbols[randomIndex];
-  };
-
-  // 开始游戏
-  const startGame = (mode) => {
-    setGameMode(mode);
+ // 开始游戏
+  const startGame = (type = 'bopomofo') => {
+    setPracticeType(type);
     setGameStarted(true);
     setScore(0);
     setTotalAttempts(0);
     setAccuracy(100);
     setTimeLeft(gameDuration);
-    setCurrentSymbol(generateRandomSymbol());
+    const randomItem = generateRandomItem(type);
+    if (type === 'bopomofo') {
+      setCurrentSymbol(randomItem);
+      setCurrentCharacter(null);
+    } else {
+      setCurrentCharacter(randomItem);
+      setCurrentSymbol(null);
+    }
     setUserInput('');
   };
 
@@ -156,28 +198,53 @@ function App() {
   };
 
   // 处理用户输入
-  const handleInputChange = (e) => {
-    const input = e.target.value;
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const input = e.target.value;
     setUserInput(input);
 
-    // 获取当前符号对应的键盘按键
-    const expectedKey = getKeyForSymbol(currentSymbol.symbol);
+  // 获取当前练习类型对应的正确答案
+  let correctAnswer = '';
+    let convertedInput = '';
+    if (practiceType === 'bopomofo') {
+      // 将用户输入的按键转换为对应的注音符号
+      convertedInput = input.split('').map(key => {
+        const symbolObj = findBopomofoSymbol(key);
+        return symbolObj ? symbolObj.symbol : '';
+      }).join('');
+      correctAnswer = currentSymbol.symbol;
+    } else {
+      // 直接使用用户输入的汉字作为答案
+      correctAnswer = currentCharacter.character;
+    }
 
-    // 检查输入是否匹配当前符号的键
-    if (input.toLowerCase() === expectedKey.toLowerCase()) {
+    // 检查输入是否匹配正确答案
+    if (correctAnswer && input.trim() !== '' && ((practiceType === 'bopomofo' && convertedInput === correctAnswer) || (practiceType === 'chinese' && input === correctAnswer))) {
       // 正确匹配
       setScore(score + 1);
       setTotalAttempts(totalAttempts + 1);
-      setCurrentSymbol(generateRandomSymbol());
-      setUserInput('');
-    } else if (expectedKey.toLowerCase().startsWith(input.toLowerCase())) {
+      // 生成新的随机项
+      const randomItem = generateRandomItem(practiceType);
+      if (practiceType === 'bopomofo') {
+        setCurrentSymbol(randomItem);
+        setCurrentCharacter(null);
+      } else {
+        setCurrentCharacter(randomItem);
+        setCurrentSymbol(null);
+      }
+      setUserInput('');} else if ((practiceType === 'bopomofo' && correctAnswer.startsWith(convertedInput)) || (practiceType === 'chinese' && correctAnswer.startsWith(input))) {
+
       // 部分匹配，继续输入
     } else {
       // 错误匹配
       setTotalAttempts(totalAttempts + 1);
+      // 仅在注音模式下清空输入，中文模式保留输入让用户继续尝试
       setUserInput('');
-      setCurrentSymbol(generateRandomSymbol());
+      // 保留当前题目，让用户重试
+      
     }
+  }
 
     // 更新准确率
     if (totalAttempts > 0) {
@@ -290,8 +357,7 @@ function App() {
           <div className="key-grid">
             {bopomofoData.consonants.map((item) => (
               <div 
-                key={item.symbol} 
-                className={`key-item ${currentSymbol && currentSymbol.symbol === item.symbol ? 'active' : ''}`}
+                key={item.symbol}               className={`key-item ${currentSymbol && currentSymbol.symbol === item.symbol ? 'active' : ''}`}
               >
                 <div className="symbol">{item.symbol}</div>
                 <div className="key-name">{item.key}</div>
@@ -359,9 +425,9 @@ function App() {
           <div className="start-screen">
             <h2>选择模式</h2>
             <div className="mode-buttons">
-              <button onClick={() => startGame('practice')}>练习模式</button>
-              <button onClick={() => startGame('test')}>测试模式</button>
-            </div>
+    <button onClick={() => startGame('bopomofo')}>注音符号练习</button>
+    <button onClick={() => startGame('chinese')}>汉字练习</button>
+  </div>
             <div className="time-settings">
               <h3>选择游戏时长</h3>
               <div className="time-buttons">
@@ -397,12 +463,21 @@ function App() {
 
             <div className="typing-area">
               <div className="current-symbol">
-                {currentSymbol && (
+                {practiceType === 'bopomofo' && currentSymbol && (
                   <>
                     <div className="symbol-display">{currentSymbol.symbol}</div>
                     <div className="symbol-info">
                       <p>输入: {getKeyForSymbol(currentSymbol.symbol)}</p>
-                      <p>发音: {currentSymbol.key}</p>  {/* 新增发音提示 */}
+                      <p>发音: {currentSymbol.key}</p>
+                    </div>
+                  </>
+                )}
+                {practiceType === 'chinese' && currentCharacter && (
+                  <>
+                    <div className="character-display">{currentCharacter.character}</div>
+                    <div className="character-info">
+                      <p>拼音: {currentCharacter.pinyin}</p>
+                      <p>注音: {currentCharacter.bopomofo}</p>
                     </div>
                   </>
                 )}
@@ -410,8 +485,9 @@ function App() {
               <input
                 type="text"
                 value={userInput}
-                onChange={handleInputChange}
-                placeholder="输入对应的拼音"
+                onChange={(e) => setUserInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                placeholder={practiceType === 'bopomofo' ? "输入对应的注音符号" : "输入对应的汉字"}
                 autoFocus
               />
             </div>
