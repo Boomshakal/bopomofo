@@ -197,12 +197,22 @@ function App() {
     return symbolToKeyMap[symbol] || currentSymbol.key;
   };
 
-  // 处理用户输入
+  // 处理用户输入 - 修改为自动识别
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const input = e.target.value;
+    e.preventDefault();
+    
+    // 汉字模式下仅在Enter键按下时处理
+    if (practiceType === 'chinese') {
+      if (e.type !== 'keypress' || e.key !== 'Enter') {
+        return;
+      }
+    }
+    
+    const input = e.target.value;
+    // 注音模式下实时更新输入
+    if (practiceType === 'bopomofo') {
       setUserInput(input);
+    }
 
       // 获取当前练习类型对应的正确答案
       let correctAnswer = '';
@@ -220,7 +230,8 @@ function App() {
       }
 
       // 检查输入是否匹配正确答案
-      if (correctAnswer && input.trim() !== '' && ((practiceType === 'bopomofo' && convertedInput === correctAnswer) || (practiceType === 'chinese' && input === correctAnswer))) {
+      // 实时检查是否完全匹配
+    if (correctAnswer && input.trim() !== '' && ((practiceType === 'bopomofo' && convertedInput === correctAnswer) || (practiceType === 'chinese' && input === correctAnswer))) {
         // 正确匹配
         setScore(score + 1);
         setTotalAttempts(totalAttempts + 1);
@@ -245,7 +256,7 @@ function App() {
         // 保留当前题目，让用户重试
 
       }
-    }
+    
 
     // 更新准确率
     if (totalAttempts > 0) {
@@ -486,8 +497,8 @@ function App() {
               <input
                 type="text"
                 value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onChange={practiceType === 'bopomofo' ? handleKeyPress : (e) => setUserInput(e.target.value)}
+                onKeyPress={practiceType === 'chinese' ? handleKeyPress : undefined}
                 placeholder={practiceType === 'bopomofo' ? "输入对应的注音符号" : "输入对应的汉字"}
                 autoFocus
               />
