@@ -48,7 +48,7 @@ function App() {
       { symbol: 'ㄩ', key: 'ü', name: 'ü' },
     ],
     tones: [
-      { symbol: '', key: '7', name: '轻声' },
+      { symbol: '·', key: '7', name: '轻声' },
       { symbol: 'ˉ', key: ' ', name: '第一声' },
       { symbol: 'ˊ', key: '6', name: '第二声' },
       { symbol: 'ˇ', key: '3', name: '第三声' },
@@ -106,11 +106,11 @@ function App() {
   const [accuracy, setAccuracy] = useState(100);
   const [gameStarted, setGameStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(180); // 180秒倒计时
-  
+
   const [gameDuration, setGameDuration] = useState(180); // 游戏时长设置，默认180秒
   const [practiceType, setPracticeType] = useState('bopomofo'); // 'bopomofo' 或 'chinese'
 
-  
+
 
   // 生成随机符号或汉字
   const generateRandomItem = (type) => {
@@ -121,9 +121,9 @@ function App() {
       const randomIndex = Math.floor(Math.random() * chineseCharacters.length);
       return chineseCharacters[randomIndex];
     }
-}
+  }
 
- // 开始游戏
+  // 开始游戏
   const startGame = (type = 'bopomofo') => {
     setPracticeType(type);
     setGameStarted(true);
@@ -191,7 +191,7 @@ function App() {
       'ˊ': '6', // 第二声映射到6键
       'ˇ': '3',
       'ˋ': '4',
-      '': '7' // 轻声映射到7键
+      '·': '7' // 轻声映射到7键
     };
 
     return symbolToKeyMap[symbol] || currentSymbol.key;
@@ -202,49 +202,50 @@ function App() {
     if (e.key === 'Enter') {
       e.preventDefault();
       const input = e.target.value;
-    setUserInput(input);
+      setUserInput(input);
 
-  // 获取当前练习类型对应的正确答案
-  let correctAnswer = '';
-    let convertedInput = '';
-    if (practiceType === 'bopomofo') {
-      // 将用户输入的按键转换为对应的注音符号
-      convertedInput = input.split('').map(key => {
-        const symbolObj = findBopomofoSymbol(key);
-        return symbolObj ? symbolObj.symbol : '';
-      }).join('');
-      correctAnswer = currentSymbol.symbol;
-    } else {
-      // 直接使用用户输入的汉字作为答案
-      correctAnswer = currentCharacter.character;
-    }
-
-    // 检查输入是否匹配正确答案
-    if (correctAnswer && input.trim() !== '' && ((practiceType === 'bopomofo' && convertedInput === correctAnswer) || (practiceType === 'chinese' && input === correctAnswer))) {
-      // 正确匹配
-      setScore(score + 1);
-      setTotalAttempts(totalAttempts + 1);
-      // 生成新的随机项
-      const randomItem = generateRandomItem(practiceType);
+      // 获取当前练习类型对应的正确答案
+      let correctAnswer = '';
+      let convertedInput = '';
       if (practiceType === 'bopomofo') {
-        setCurrentSymbol(randomItem);
-        setCurrentCharacter(null);
+        // 将用户输入的按键转换为对应的注音符号
+        convertedInput = input.split('').map(key => {
+          const symbolObj = findBopomofoSymbol(key);
+          return symbolObj ? symbolObj.symbol : '';
+        }).join('');
+        correctAnswer = currentSymbol.symbol;
       } else {
-        setCurrentCharacter(randomItem);
-        setCurrentSymbol(null);
+        // 直接使用用户输入的汉字作为答案
+        correctAnswer = currentCharacter.character;
       }
-      setUserInput('');} else if ((practiceType === 'bopomofo' && correctAnswer.startsWith(convertedInput)) || (practiceType === 'chinese' && correctAnswer.startsWith(input))) {
 
-      // 部分匹配，继续输入
-    } else {
-      // 错误匹配
-      setTotalAttempts(totalAttempts + 1);
-      // 仅在注音模式下清空输入，中文模式保留输入让用户继续尝试
-      setUserInput('');
-      // 保留当前题目，让用户重试
-      
+      // 检查输入是否匹配正确答案
+      if (correctAnswer && input.trim() !== '' && ((practiceType === 'bopomofo' && convertedInput === correctAnswer) || (practiceType === 'chinese' && input === correctAnswer))) {
+        // 正确匹配
+        setScore(score + 1);
+        setTotalAttempts(totalAttempts + 1);
+        // 生成新的随机项
+        const randomItem = generateRandomItem(practiceType);
+        if (practiceType === 'bopomofo') {
+          setCurrentSymbol(randomItem);
+          setCurrentCharacter(null);
+        } else {
+          setCurrentCharacter(randomItem);
+          setCurrentSymbol(null);
+        }
+        setUserInput('');
+      } else if ((practiceType === 'bopomofo' && correctAnswer.startsWith(convertedInput)) || (practiceType === 'chinese' && correctAnswer.startsWith(input))) {
+
+        // 部分匹配，继续输入
+      } else {
+        // 错误匹配
+        setTotalAttempts(totalAttempts + 1);
+        // 仅在注音模式下清空输入，中文模式保留输入让用户继续尝试
+        setUserInput('');
+        // 保留当前题目，让用户重试
+
+      }
     }
-  }
 
     // 更新准确率
     if (totalAttempts > 0) {
@@ -278,7 +279,7 @@ function App() {
     // 第四行 - ZXCVBNM
     ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/']
   ];
-  
+
   // 标点符号映射
   const punctuationMap = {
     '-': 'ㄦ',
@@ -294,7 +295,7 @@ function App() {
     if (punctuationMap[key]) {
       return { symbol: punctuationMap[key], key: key, name: `标点符号 ${punctuationMap[key]}` };
     }
-    
+
     // 标准注音键盘布局映射 - 根据图片中的标准注音键盘布局
     const keyboardMapping = {
       // 第一行 - 数字键
@@ -356,8 +357,8 @@ function App() {
           <h3>声母</h3>
           <div className="key-grid">
             {bopomofoData.consonants.map((item) => (
-              <div 
-                key={item.symbol}               className={`key-item ${currentSymbol && currentSymbol.symbol === item.symbol ? 'active' : ''}`}
+              <div
+                key={item.symbol} className={`key-item ${currentSymbol && currentSymbol.symbol === item.symbol ? 'active' : ''}`}
               >
                 <div className="symbol">{item.symbol}</div>
                 <div className="key-name">{item.key}</div>
@@ -370,8 +371,8 @@ function App() {
           <h3>介音</h3>
           <div className="key-grid">
             {bopomofoData.medials.map((item) => (
-              <div 
-                key={item.symbol} 
+              <div
+                key={item.symbol}
                 className={`key-item ${currentSymbol && currentSymbol.symbol === item.symbol ? 'active' : ''}`}
               >
                 <div className="symbol">{item.symbol}</div>
@@ -385,8 +386,8 @@ function App() {
           <h3>韵母</h3>
           <div className="key-grid">
             {bopomofoData.vowels.map((item) => (
-              <div 
-                key={item.symbol} 
+              <div
+                key={item.symbol}
                 className={`key-item ${currentSymbol && currentSymbol.symbol === item.symbol ? 'active' : ''}`}
               >
                 <div className="symbol">{item.symbol}</div>
@@ -400,8 +401,8 @@ function App() {
           <h3>声调</h3>
           <div className="key-grid">
             {bopomofoData.tones.filter(tone => tone.symbol !== '').map((item) => (
-              <div 
-                key={item.symbol} 
+              <div
+                key={item.symbol}
                 className={`key-item ${currentSymbol && currentSymbol.symbol === item.symbol ? 'active' : ''}`}
               >
                 <div className="symbol">{item.symbol}</div>
@@ -425,9 +426,9 @@ function App() {
           <div className="start-screen">
             <h2>选择模式</h2>
             <div className="mode-buttons">
-    <button onClick={() => startGame('bopomofo')}>注音符号练习</button>
-    <button onClick={() => startGame('chinese')}>汉字练习</button>
-  </div>
+              <button onClick={() => startGame('bopomofo')}>注音符号练习</button>
+              <button onClick={() => startGame('chinese')}>汉字练习</button>
+            </div>
             <div className="time-settings">
               <h3>选择游戏时长</h3>
               <div className="time-buttons">
@@ -486,91 +487,91 @@ function App() {
                 type="text"
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
+                onKeyPress={handleKeyPress}
                 placeholder={practiceType === 'bopomofo' ? "输入对应的注音符号" : "输入对应的汉字"}
                 autoFocus
               />
             </div>
 
             <div className="virtual-keyboard">
-               <h3>虚拟键盘布局</h3>
-               <div className="keyboard-container">
-                 {keyboardLayout.map((row, rowIndex) => (
-                   <div key={`row-${rowIndex}`} className="keyboard-row">
-                     {rowIndex === 3 && <div className="key-spacer"></div>}
-                     {row.map((key, keyIndex) => {
-                       const bopomofoSymbol = findBopomofoSymbol(key);
-                       const isActive = currentSymbol && bopomofoSymbol && 
-                                        currentSymbol.symbol === bopomofoSymbol.symbol;
-                       
-                       // 根据键位确定手指类别
-                       let fingerClass = '';
-                       if (rowIndex === 0) { // 第一行 - 数字键
-                         if (keyIndex === 0) fingerClass = 'left-pinky';
-                         else if (keyIndex === 1) fingerClass = 'left-ring';
-                         else if (keyIndex === 2) fingerClass = 'left-middle';
-                         else if (keyIndex === 3 || keyIndex === 4) fingerClass = 'left-index';
-                         else if (keyIndex === 5 || keyIndex === 6) fingerClass = 'right-index';
-                         else if (keyIndex === 7) fingerClass = 'right-middle';
-                         else if (keyIndex === 8) fingerClass = 'right-ring';
-                         else fingerClass = 'right-pinky';
-                       } else if (rowIndex === 1) { // 第二行 - QWERTY
-                         if (keyIndex === 0) fingerClass = 'left-pinky';
-                         else if (keyIndex === 1) fingerClass = 'left-ring';
-                         else if (keyIndex === 2) fingerClass = 'left-middle';
-                         else if (keyIndex === 3 || keyIndex === 4) fingerClass = 'left-index';
-                         else if (keyIndex === 5 || keyIndex === 6) fingerClass = 'right-index';
-                         else if (keyIndex === 7) fingerClass = 'right-middle';
-                         else if (keyIndex === 8) fingerClass = 'right-ring';
-                         else fingerClass = 'right-pinky';
-                       } else if (rowIndex === 2) { // 第三行 - ASDFGHJKL
-                         if (keyIndex === 0) fingerClass = 'left-pinky';
-                         else if (keyIndex === 1) fingerClass = 'left-ring';
-                         else if (keyIndex === 2) fingerClass = 'left-middle';
-                         else if (keyIndex === 3 || keyIndex === 4) fingerClass = 'left-index';
-                         else if (keyIndex === 5 || keyIndex === 6) fingerClass = 'right-index';
-                         else if (keyIndex === 7) fingerClass = 'right-middle';
-                         else if (keyIndex === 8) fingerClass = 'right-ring';
-                         else fingerClass = 'right-pinky';
-                       } else if (rowIndex === 3) { // 第四行 - ZXCVBNM
-                         if (keyIndex === 0) fingerClass = 'left-pinky';
-                         else if (keyIndex === 1) fingerClass = 'left-ring';
-                         else if (keyIndex === 2) fingerClass = 'left-middle';
-                         else if (keyIndex === 3 || keyIndex === 4) fingerClass = 'left-index';
-                         else if (keyIndex === 5 || keyIndex === 6) fingerClass = 'right-index';
-                         else if (keyIndex === 7) fingerClass = 'right-middle';
-                         else if (keyIndex === 8) fingerClass = 'right-ring';
-                         else fingerClass = 'right-pinky';
-                       }
-                       
-                       return (
-                         <div 
-                           key={key} 
-                           className={`keyboard-key ${fingerClass} ${isActive ? 'active' : ''} ${bopomofoSymbol ? 'has-symbol' : ''}`}
-                         >
-                           <div className="key-label">{key.toUpperCase()}</div>
-                           {bopomofoSymbol && (
-                             <div className="key-symbol">{bopomofoSymbol.symbol}</div>
-                           )}
-                         </div>
-                       );
-                     })}
-                     {rowIndex === 3 && <div className="key-spacer"></div>}
-                   </div>
-                 ))}
-                 <div className="keyboard-row">
-                   <div className="keyboard-key space-key right-thumb">
-                     <div className="key-label">空格</div>
-                     {findBopomofoSymbol(' ') && (
-                       <div className="key-symbol">{findBopomofoSymbol(' ').symbol}</div>
-                     )}
-                   </div>
-                 </div>
-               </div>
-               <div className="keyboard-note">
-                 <p>注: 多字符输入（如 "zh", "ang" 等）需要按顺序输入对应的按键</p>
-               </div>
-             </div>
+              <h3>虚拟键盘布局</h3>
+              <div className="keyboard-container">
+                {keyboardLayout.map((row, rowIndex) => (
+                  <div key={`row-${rowIndex}`} className="keyboard-row">
+                    {rowIndex === 3 && <div className="key-spacer"></div>}
+                    {row.map((key, keyIndex) => {
+                      const bopomofoSymbol = findBopomofoSymbol(key);
+                      const isActive = currentSymbol && bopomofoSymbol &&
+                        currentSymbol.symbol === bopomofoSymbol.symbol;
+
+                      // 根据键位确定手指类别
+                      let fingerClass = '';
+                      if (rowIndex === 0) { // 第一行 - 数字键
+                        if (keyIndex === 0) fingerClass = 'left-pinky';
+                        else if (keyIndex === 1) fingerClass = 'left-ring';
+                        else if (keyIndex === 2) fingerClass = 'left-middle';
+                        else if (keyIndex === 3 || keyIndex === 4) fingerClass = 'left-index';
+                        else if (keyIndex === 5 || keyIndex === 6) fingerClass = 'right-index';
+                        else if (keyIndex === 7) fingerClass = 'right-middle';
+                        else if (keyIndex === 8) fingerClass = 'right-ring';
+                        else fingerClass = 'right-pinky';
+                      } else if (rowIndex === 1) { // 第二行 - QWERTY
+                        if (keyIndex === 0) fingerClass = 'left-pinky';
+                        else if (keyIndex === 1) fingerClass = 'left-ring';
+                        else if (keyIndex === 2) fingerClass = 'left-middle';
+                        else if (keyIndex === 3 || keyIndex === 4) fingerClass = 'left-index';
+                        else if (keyIndex === 5 || keyIndex === 6) fingerClass = 'right-index';
+                        else if (keyIndex === 7) fingerClass = 'right-middle';
+                        else if (keyIndex === 8) fingerClass = 'right-ring';
+                        else fingerClass = 'right-pinky';
+                      } else if (rowIndex === 2) { // 第三行 - ASDFGHJKL
+                        if (keyIndex === 0) fingerClass = 'left-pinky';
+                        else if (keyIndex === 1) fingerClass = 'left-ring';
+                        else if (keyIndex === 2) fingerClass = 'left-middle';
+                        else if (keyIndex === 3 || keyIndex === 4) fingerClass = 'left-index';
+                        else if (keyIndex === 5 || keyIndex === 6) fingerClass = 'right-index';
+                        else if (keyIndex === 7) fingerClass = 'right-middle';
+                        else if (keyIndex === 8) fingerClass = 'right-ring';
+                        else fingerClass = 'right-pinky';
+                      } else if (rowIndex === 3) { // 第四行 - ZXCVBNM
+                        if (keyIndex === 0) fingerClass = 'left-pinky';
+                        else if (keyIndex === 1) fingerClass = 'left-ring';
+                        else if (keyIndex === 2) fingerClass = 'left-middle';
+                        else if (keyIndex === 3 || keyIndex === 4) fingerClass = 'left-index';
+                        else if (keyIndex === 5 || keyIndex === 6) fingerClass = 'right-index';
+                        else if (keyIndex === 7) fingerClass = 'right-middle';
+                        else if (keyIndex === 8) fingerClass = 'right-ring';
+                        else fingerClass = 'right-pinky';
+                      }
+
+                      return (
+                        <div
+                          key={key}
+                          className={`keyboard-key ${fingerClass} ${isActive ? 'active' : ''} ${bopomofoSymbol ? 'has-symbol' : ''}`}
+                        >
+                          <div className="key-label">{key.toUpperCase()}</div>
+                          {bopomofoSymbol && (
+                            <div className="key-symbol">{bopomofoSymbol.symbol}</div>
+                          )}
+                        </div>
+                      );
+                    })}
+                    {rowIndex === 3 && <div className="key-spacer"></div>}
+                  </div>
+                ))}
+                <div className="keyboard-row">
+                  <div className="keyboard-key space-key right-thumb">
+                    <div className="key-label">空格</div>
+                    {findBopomofoSymbol(' ') && (
+                      <div className="key-symbol">{findBopomofoSymbol(' ').symbol}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="keyboard-note">
+                <p>注: 多字符输入（如 "zh", "ang" 等）需要按顺序输入对应的按键</p>
+              </div>
+            </div>
             <KeyboardLayout />
           </div>
         )}
