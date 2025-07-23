@@ -256,7 +256,7 @@ function App() {
 
       // 检查输入是否匹配正确答案
       // 实时检查是否完全匹配
-    if (correctAnswer && input.trim() !== '' && ((practiceType === 'bopomofo' && convertedInput === correctAnswer) || (['chinese', 'word'].includes(practiceType) && input === correctAnswer))) {
+    if (correctAnswer && input !== '' && ((practiceType === 'bopomofo' && convertedInput === correctAnswer) || (['chinese', 'word'].includes(practiceType) && input === correctAnswer))) {
         // 正确匹配
         setScore(score + 1);
         setTotalAttempts(totalAttempts + 1);
@@ -501,7 +501,7 @@ function App() {
                 <button className="time-adjust-btn" onClick={() => {
                   // 暂停游戏并显示时间调整对话框
                   setGameStarted(false);
-                }}>调整时间</button>
+                }}>返回</button>
               </div>
             </div>
 

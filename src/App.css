@@ -90,6 +90,20 @@
 }
 
 .time-buttons button {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 8px 16px;
+  margin: 0 4px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.time-buttons button.active {
+  background-color: #4a6fa5;
+  color: white;
+}
+
+.time-buttons button:hover {
   padding: 8px 16px;
   font-size: 14px;
 }
@@ -359,7 +373,7 @@
 }
 
 .keyboard-key.active {
-  background-color: #4a6fa5;
+  background-color: #4a6fa5 !important;
   color: white;
   transform: translateY(2px);
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
