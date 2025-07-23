@@ -369,7 +369,7 @@ function App() {
           <div className="key-grid">
             {bopomofoData.consonants.map((item) => (
               <div
-                key={item.symbol} className={`key-item ${currentSymbol && currentSymbol.symbol === item.symbol ? 'active' : ''}`}
+                key={item.symbol} className={`key-item ${(currentSymbol && currentSymbol.symbol === item.symbol) || (practiceType === 'chinese' && currentCharacter && currentCharacter.bopomofo && currentCharacter.bopomofo.includes(item.symbol)) ? 'active' : ''}`}
               >
                 <div className="symbol">{item.symbol}</div>
                 <div className="key-name">{item.key}</div>
@@ -384,7 +384,7 @@ function App() {
             {bopomofoData.medials.map((item) => (
               <div
                 key={item.symbol}
-                className={`key-item ${currentSymbol && currentSymbol.symbol === item.symbol ? 'active' : ''}`}
+                className={`key-item ${(currentSymbol && currentSymbol.symbol === item.symbol) || (practiceType === 'chinese' && currentCharacter && currentCharacter.bopomofo && currentCharacter.bopomofo.includes(item.symbol)) ? 'active' : ''}`}
               >
                 <div className="symbol">{item.symbol}</div>
                 <div className="key-name">{item.key}</div>
@@ -399,7 +399,7 @@ function App() {
             {bopomofoData.vowels.map((item) => (
               <div
                 key={item.symbol}
-                className={`key-item ${currentSymbol && currentSymbol.symbol === item.symbol ? 'active' : ''}`}
+                className={`key-item ${(currentSymbol && currentSymbol.symbol === item.symbol) || (practiceType === 'chinese' && currentCharacter && currentCharacter.bopomofo && currentCharacter.bopomofo.includes(item.symbol)) ? 'active' : ''}`}
               >
                 <div className="symbol">{item.symbol}</div>
                 <div className="key-name">{item.key}</div>
@@ -414,7 +414,7 @@ function App() {
             {bopomofoData.tones.filter(tone => tone.symbol !== '').map((item) => (
               <div
                 key={item.symbol}
-                className={`key-item ${currentSymbol && currentSymbol.symbol === item.symbol ? 'active' : ''}`}
+                className={`key-item ${(currentSymbol && currentSymbol.symbol === item.symbol) || (practiceType === 'chinese' && currentCharacter && currentCharacter.bopomofo && currentCharacter.bopomofo.includes(item.symbol)) ? 'active' : ''}`}
               >
                 <div className="symbol">{item.symbol}</div>
                 <div className="key-name">{item.key}</div>
@@ -512,8 +512,8 @@ function App() {
                     {rowIndex === 3 && <div className="key-spacer"></div>}
                     {row.map((key, keyIndex) => {
                       const bopomofoSymbol = findBopomofoSymbol(key);
-                      const isActive = currentSymbol && bopomofoSymbol &&
-                        currentSymbol.symbol === bopomofoSymbol.symbol;
+                      const isActive = (practiceType === 'bopomofo' && currentSymbol && bopomofoSymbol && currentSymbol.symbol === bopomofoSymbol.symbol) ||
+  (practiceType === 'chinese' && currentCharacter && currentCharacter.bopomofo && currentCharacter.bopomofo.includes(bopomofoSymbol?.symbol));
 
                       // 根据键位确定手指类别
                       let fingerClass = '';
