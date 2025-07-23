@@ -64,6 +64,20 @@ function App() {
     ...bopomofoData.tones.filter(tone => tone.symbol !== '')
   ];
 
+  // 词语练习数据
+  const words = [
+    { word: '你好', pinyin: 'nǐ hǎo', bopomofo: 'ㄋㄧˇ ㄏㄠˇ' },
+    { word: '谢谢', pinyin: 'xiè xie', bopomofo: 'ㄒㄧㄝˋ ㄒㄧㄝ˙' },
+    { word: '再见', pinyin: 'zài jiàn', bopomofo: 'ㄗㄞˋ ㄐㄧㄢˋ' },
+    { word: '对不起', pinyin: 'duì bu qǐ', bopomofo: 'ㄉㄨㄟˋ ㄅㄨ˙ ㄑㄧˇ' },
+    { word: '没关系', pinyin: 'méi guān xi', bopomofo: 'ㄇㄟˊ ㄍㄨㄢ ㄒㄧ˙' },
+    { word: '早上好', pinyin: 'zǎo shàng hǎo', bopomofo: 'ㄗㄠˇ ㄕㄤˋ ㄏㄠˇ' },
+    { word: '晚上好', pinyin: 'wǎn shàng hǎo', bopomofo: 'ㄨㄢˇ ㄕㄤˋ ㄏㄠˇ' },
+    { word: '谢谢', pinyin: 'xiè xie', bopomofo: 'ㄒㄧㄝˋ ㄒㄧㄝ˙' },
+    { word: '请', pinyin: 'qǐng', bopomofo: 'ㄑㄧㄥˇ' },
+    { word: '不客气', pinyin: 'bú kè qì', bopomofo: 'ㄅㄨˊ ㄎㄜˋ ㄑㄧˋ' },
+  ];
+
   // 汉字练习数据
   const chineseCharacters = [
     { character: '的', pinyin: 'de', bopomofo: 'ㄉㄜ' },
@@ -100,6 +114,7 @@ function App() {
   // 状态
   const [currentSymbol, setCurrentSymbol] = useState(null);
   const [currentCharacter, setCurrentCharacter] = useState(null);
+  const [currentWord, setCurrentWord] = useState(null);
   const [userInput, setUserInput] = useState('');
   const [score, setScore] = useState(0);
   const [totalAttempts, setTotalAttempts] = useState(0);
@@ -117,9 +132,12 @@ function App() {
     if (type === 'bopomofo') {
       const randomIndex = Math.floor(Math.random() * allSymbols.length);
       return allSymbols[randomIndex];
-    } else {
+    } else if (type === 'chinese') {
       const randomIndex = Math.floor(Math.random() * chineseCharacters.length);
       return chineseCharacters[randomIndex];
+    } else if (type === 'word') {
+      const randomIndex = Math.floor(Math.random() * words.length);
+      return words[randomIndex];
     }
   }
 
@@ -138,8 +156,14 @@ function App() {
     } else {
       setCurrentCharacter(randomItem);
       setCurrentSymbol(null);
+      setCurrentWord(null);
     }
     setUserInput('');
+    if (type === 'word') {
+      setCurrentWord(randomItem);
+      setCurrentSymbol(null);
+      setCurrentCharacter(null);
+    }
   };
 
   // 获取符号对应的键盘按键
@@ -202,11 +226,11 @@ function App() {
     e.preventDefault();
     
     // 汉字模式下仅在Enter键按下时处理
-    if (practiceType === 'chinese') {
-      if (e.type !== 'keypress' || e.key !== 'Enter') {
-        return;
+    if (['chinese', 'word'].includes(practiceType)) {
+        if (e.type !== 'keypress' || e.key !== 'Enter') {
+          return;
+        }
       }
-    }
     
     const input = e.target.value;
     // 注音模式下实时更新输入
@@ -224,14 +248,15 @@ function App() {
           return symbolObj ? symbolObj.symbol : '';
         }).join('');
         correctAnswer = currentSymbol.symbol;
-      } else {
-        // 直接使用用户输入的汉字作为答案
+      } else if (practiceType === 'chinese') {
         correctAnswer = currentCharacter.character;
+      } else if (practiceType === 'word') {
+        correctAnswer = currentWord.word;
       }
 
       // 检查输入是否匹配正确答案
       // 实时检查是否完全匹配
-    if (correctAnswer && input.trim() !== '' && ((practiceType === 'bopomofo' && convertedInput === correctAnswer) || (practiceType === 'chinese' && input === correctAnswer))) {
+    if (correctAnswer && input.trim() !== '' && ((practiceType === 'bopomofo' && convertedInput === correctAnswer) || (['chinese', 'word'].includes(practiceType) && input === correctAnswer))) {
         // 正确匹配
         setScore(score + 1);
         setTotalAttempts(totalAttempts + 1);
@@ -240,9 +265,15 @@ function App() {
         if (practiceType === 'bopomofo') {
           setCurrentSymbol(randomItem);
           setCurrentCharacter(null);
-        } else {
+          setCurrentWord(null);
+        } else if (practiceType === 'chinese') {
           setCurrentCharacter(randomItem);
           setCurrentSymbol(null);
+          setCurrentWord(null);
+        } else if (practiceType === 'word') {
+          setCurrentWord(randomItem);
+          setCurrentSymbol(null);
+          setCurrentCharacter(null);
         }
         setUserInput('');
       } else if ((practiceType === 'bopomofo' && correctAnswer.startsWith(convertedInput)) || (practiceType === 'chinese' && correctAnswer.startsWith(input))) {
@@ -369,7 +400,7 @@ function App() {
           <div className="key-grid">
             {bopomofoData.consonants.map((item) => (
               <div
-                key={item.symbol} className={`key-item ${(currentSymbol && currentSymbol.symbol === item.symbol) || (practiceType === 'chinese' && currentCharacter && currentCharacter.bopomofo && currentCharacter.bopomofo.includes(item.symbol)) ? 'active' : ''}`}
+                key={item.symbol} className={`key-item ${(currentSymbol && currentSymbol.symbol === item.symbol) || (practiceType === 'chinese' && currentCharacter && currentCharacter.bopomofo && currentCharacter.bopomofo.includes(item.symbol)) || (practiceType === 'word' && currentWord && currentWord.bopomofo && currentWord.bopomofo.includes(item.symbol)) ? 'active' : ''}`}
               >
                 <div className="symbol">{item.symbol}</div>
                 <div className="key-name">{item.key}</div>
@@ -384,7 +415,7 @@ function App() {
             {bopomofoData.medials.map((item) => (
               <div
                 key={item.symbol}
-                className={`key-item ${(currentSymbol && currentSymbol.symbol === item.symbol) || (practiceType === 'chinese' && currentCharacter && currentCharacter.bopomofo && currentCharacter.bopomofo.includes(item.symbol)) ? 'active' : ''}`}
+                className={`key-item ${(currentSymbol && currentSymbol.symbol === item.symbol) || (practiceType === 'chinese' && currentCharacter && currentCharacter.bopomofo && currentCharacter.bopomofo.includes(item.symbol)) || (practiceType === 'word' && currentWord && currentWord.bopomofo && currentWord.bopomofo.includes(item.symbol)) ? 'active' : ''}`}
               >
                 <div className="symbol">{item.symbol}</div>
                 <div className="key-name">{item.key}</div>
@@ -399,7 +430,7 @@ function App() {
             {bopomofoData.vowels.map((item) => (
               <div
                 key={item.symbol}
-                className={`key-item ${(currentSymbol && currentSymbol.symbol === item.symbol) || (practiceType === 'chinese' && currentCharacter && currentCharacter.bopomofo && currentCharacter.bopomofo.includes(item.symbol)) ? 'active' : ''}`}
+                className={`key-item ${(currentSymbol && currentSymbol.symbol === item.symbol) || (practiceType === 'chinese' && currentCharacter && currentCharacter.bopomofo && currentCharacter.bopomofo.includes(item.symbol)) || (practiceType === 'word' && currentWord && currentWord.bopomofo && currentWord.bopomofo.includes(item.symbol)) ? 'active' : ''}`}
               >
                 <div className="symbol">{item.symbol}</div>
                 <div className="key-name">{item.key}</div>
@@ -414,7 +445,7 @@ function App() {
             {bopomofoData.tones.filter(tone => tone.symbol !== '').map((item) => (
               <div
                 key={item.symbol}
-                className={`key-item ${(currentSymbol && currentSymbol.symbol === item.symbol) || (practiceType === 'chinese' && currentCharacter && currentCharacter.bopomofo && currentCharacter.bopomofo.includes(item.symbol)) ? 'active' : ''}`}
+                className={`key-item ${(currentSymbol && currentSymbol.symbol === item.symbol) || (practiceType === 'chinese' && currentCharacter && currentCharacter.bopomofo && currentCharacter.bopomofo.includes(item.symbol)) || (practiceType === 'word' && currentWord && currentWord.bopomofo && currentWord.bopomofo.includes(item.symbol)) ? 'active' : ''}`}
               >
                 <div className="symbol">{item.symbol}</div>
                 <div className="key-name">{item.key}</div>
@@ -439,6 +470,7 @@ function App() {
             <div className="mode-buttons">
               <button onClick={() => startGame('bopomofo')}>注音符号练习</button>
               <button onClick={() => startGame('chinese')}>汉字练习</button>
+              <button onClick={() => startGame('word')}>词语练习</button>
             </div>
             <div className="time-settings">
               <h3>选择游戏时长</h3>
@@ -476,7 +508,7 @@ function App() {
             <div className="typing-area">
               <div className="current-symbol">
                 {practiceType === 'bopomofo' && currentSymbol && (
-                  <>
+                  <> 
                     <div className="symbol-display">{currentSymbol.symbol}</div>
                     <div className="symbol-info">
                       <p>输入: {getKeyForSymbol(currentSymbol.symbol)}</p>
@@ -485,11 +517,20 @@ function App() {
                   </>
                 )}
                 {practiceType === 'chinese' && currentCharacter && (
-                  <>
+                  <> 
                     <div className="character-display">{currentCharacter.character}</div>
                     <div className="character-info">
                       <p>拼音: {currentCharacter.pinyin}</p>
                       <p>注音: {currentCharacter.bopomofo}</p>
+                    </div>
+                  </>
+                )}
+                {practiceType === 'word' && currentWord && (
+                  <> 
+                    <div className="word-display">{currentWord.word}</div>
+                    <div className="word-info">
+                      <p>拼音: {currentWord.pinyin}</p>
+                      <p>注音: {currentWord.bopomofo}</p>
                     </div>
                   </>
                 )}
@@ -498,8 +539,8 @@ function App() {
                 type="text"
                 value={userInput}
                 onChange={practiceType === 'bopomofo' ? handleKeyPress : (e) => setUserInput(e.target.value)}
-                onKeyPress={practiceType === 'chinese' ? handleKeyPress : undefined}
-                placeholder={practiceType === 'bopomofo' ? "输入对应的注音符号" : "输入对应的汉字"}
+                onKeyPress={['chinese', 'word'].includes(practiceType) ? handleKeyPress : undefined}
+                placeholder={practiceType === 'bopomofo' ? "输入对应的注音符号" : practiceType === 'chinese' ? "输入对应的汉字" : "输入对应的词语"}
                 autoFocus
               />
             </div>
@@ -512,8 +553,11 @@ function App() {
                     {rowIndex === 3 && <div className="key-spacer"></div>}
                     {row.map((key, keyIndex) => {
                       const bopomofoSymbol = findBopomofoSymbol(key);
-                      const isActive = (practiceType === 'bopomofo' && currentSymbol && bopomofoSymbol && currentSymbol.symbol === bopomofoSymbol.symbol) ||
-  (practiceType === 'chinese' && currentCharacter && currentCharacter.bopomofo && currentCharacter.bopomofo.includes(bopomofoSymbol?.symbol));
+                      const isActive = bopomofoSymbol && (
+  (practiceType === 'bopomofo' && currentSymbol?.symbol === bopomofoSymbol.symbol) ||
+  (practiceType === 'chinese' && currentCharacter?.bopomofo?.includes(bopomofoSymbol.symbol)) ||
+  (practiceType === 'word' && currentWord?.bopomofo?.includes(bopomofoSymbol.symbol))
+);
 
                       // 根据键位确定手指类别
                       let fingerClass = '';
