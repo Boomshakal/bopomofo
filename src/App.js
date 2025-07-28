@@ -111,6 +111,22 @@ function App() {
     { character: '嗯', pinyin: 'en', bopomofo: 'ㄣ' },
   ];
 
+  // 文章练习数据
+  const articles = [
+    { 
+      title: '春晓', 
+      content: '春眠不觉晓，处处闻啼鸟。夜来风雨声，花落知多少。', 
+      pinyin: 'chūn mián bù jué xiǎo, chù chù wén tí niǎo. yè lái fēng yǔ shēng, huā luò zhī duō shǎo.', 
+      bopomofo: 'ㄔㄨㄣˊ ㄇㄧㄢˊ ㄅㄨˋ ㄐㄩㄝˊ ㄒㄧㄠˇ, ㄔㄨˋ ㄔㄨˋ ㄨㄣˊ ㄊㄧˊ ㄋㄧㄠˇ. ㄧㄝˋ ㄌㄞˊ ㄈㄥ ㄧㄩˇ ㄕㄥ, ㄏㄨㄚ ㄌㄨㄛˋ ㄓ ㄉㄨㄛ ㄕㄠˇ.' 
+    },
+    { 
+      title: '静夜思', 
+      content: '床前明月光，疑是地上霜。举头望明月，低头思故乡。', 
+      pinyin: 'chuáng qián míng yuè guāng, yí shì dì shàng shuāng. jǔ tóu wàng míng yuè, dī tóu sī gù xiāng.', 
+      bopomofo: 'ㄔㄨㄤˊ ㄑㄧㄢˊ ㄇㄧㄥˊ ㄧㄩㄝˋ ㄍㄨㄤ, ㄧˊ ㄕˋ ㄉㄧˋ ㄕㄤˋ ㄕㄨㄤ. ㄐㄧˇ ㄊㄡˊ ㄨㄤˋ ㄇㄧㄥˊ ㄧㄩㄝˋ, ㄉㄧ ㄊㄡˊ ㄙㄧ ㄍㄨˋ ㄒㄧㄤ.' 
+    }
+  ];
+
   // 状态
   const [currentSymbol, setCurrentSymbol] = useState(null);
   const [currentCharacter, setCurrentCharacter] = useState(null);
@@ -138,6 +154,9 @@ function App() {
     } else if (type === 'word') {
       const randomIndex = Math.floor(Math.random() * words.length);
       return words[randomIndex];
+    } else if (type === 'article') {
+      const randomIndex = Math.floor(Math.random() * articles.length);
+      return articles[randomIndex];
     }
   }
 
@@ -153,10 +172,19 @@ function App() {
     if (type === 'bopomofo') {
       setCurrentSymbol(randomItem);
       setCurrentCharacter(null);
-    } else {
+      setCurrentWord(null);
+    } else if (type === 'chinese') {
       setCurrentCharacter(randomItem);
       setCurrentSymbol(null);
       setCurrentWord(null);
+    } else if (type === 'word') {
+      setCurrentWord(randomItem);
+      setCurrentSymbol(null);
+      setCurrentCharacter(null);
+    } else if (type === 'article') {
+      setCurrentWord(randomItem); // 使用setCurrentWord来存储文章
+      setCurrentSymbol(null);
+      setCurrentCharacter(null);
     }
     setUserInput('');
     if (type === 'word') {
@@ -226,7 +254,7 @@ function App() {
     e.preventDefault();
     
     // 汉字模式下仅在Enter键按下时处理
-    if (['chinese', 'word'].includes(practiceType)) {
+    if (['chinese', 'word', 'article'].includes(practiceType)) {
         if (e.type !== 'keypress' || e.key !== 'Enter') {
           return;
         }
@@ -252,11 +280,13 @@ function App() {
         correctAnswer = currentCharacter.character;
       } else if (practiceType === 'word') {
         correctAnswer = currentWord.word;
+      } else if (practiceType === 'article') {
+        correctAnswer = currentWord.content;
       }
 
       // 检查输入是否匹配正确答案
       // 实时检查是否完全匹配
-    if (correctAnswer && input !== '' && ((practiceType === 'bopomofo' && convertedInput === correctAnswer) || (['chinese', 'word'].includes(practiceType) && input === correctAnswer))) {
+    if (correctAnswer && input !== '' && ((practiceType === 'bopomofo' && convertedInput === correctAnswer) || (['chinese', 'word', 'article'].includes(practiceType) && input === correctAnswer))) {
         // 正确匹配
         setScore(score + 1);
         setTotalAttempts(totalAttempts + 1);
@@ -271,6 +301,10 @@ function App() {
           setCurrentSymbol(null);
           setCurrentWord(null);
         } else if (practiceType === 'word') {
+          setCurrentWord(randomItem);
+          setCurrentSymbol(null);
+          setCurrentCharacter(null);
+        } else if (practiceType === 'article') {
           setCurrentWord(randomItem);
           setCurrentSymbol(null);
           setCurrentCharacter(null);
@@ -471,6 +505,7 @@ function App() {
               <button onClick={() => startGame('bopomofo')}>注音符号练习</button>
               <button onClick={() => startGame('chinese')}>汉字练习</button>
               <button onClick={() => startGame('word')}>词语练习</button>
+              <button onClick={() => startGame('article')}>文章练习</button>
             </div>
             <div className="time-settings">
               <h3>选择游戏时长</h3>
@@ -534,13 +569,23 @@ function App() {
                     </div>
                   </>
                 )}
+                {practiceType === 'article' && currentWord && (
+                  <> 
+                    <div className="article-title">{currentWord.title}</div>
+                    <div className="article-content">{currentWord.content}</div>
+                    <div className="article-info">
+                      <p>拼音: {currentWord.pinyin}</p>
+                      <p>注音: {currentWord.bopomofo}</p>
+                    </div>
+                  </>
+                )}
               </div>
               <input
                 type="text"
                 value={userInput}
                 onChange={practiceType === 'bopomofo' ? handleKeyPress : (e) => setUserInput(e.target.value)}
-                onKeyPress={['chinese', 'word'].includes(practiceType) ? handleKeyPress : undefined}
-                placeholder={practiceType === 'bopomofo' ? "输入对应的注音符号" : practiceType === 'chinese' ? "输入对应的汉字" : "输入对应的词语"}
+                onKeyPress={['chinese', 'word', 'article'].includes(practiceType) ? handleKeyPress : undefined}
+                placeholder={practiceType === 'bopomofo' ? "输入对应的注音符号" : practiceType === 'chinese' ? "输入对应的汉字" : practiceType === 'word' ? "输入对应的词语" : "输入对应的文章内容"}
                 autoFocus
               />
             </div>
@@ -556,7 +601,8 @@ function App() {
                       const isActive = bopomofoSymbol && (
   (practiceType === 'bopomofo' && currentSymbol?.symbol === bopomofoSymbol.symbol) ||
   (practiceType === 'chinese' && currentCharacter?.bopomofo?.includes(bopomofoSymbol.symbol)) ||
-  (practiceType === 'word' && currentWord?.bopomofo?.includes(bopomofoSymbol.symbol))
+  (practiceType === 'word' && currentWord?.bopomofo?.includes(bopomofoSymbol.symbol)) ||
+  (practiceType === 'article' && currentWord?.bopomofo?.includes(bopomofoSymbol.symbol))
 );
 
                       // 根据键位确定手指类别

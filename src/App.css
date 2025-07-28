@@ -452,3 +452,29 @@
     width: 16px;
   }
 }
+
+/* 文章练习样式 */
+.article-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.article-content {
+  font-size: 1.5rem;
+  line-height: 2;
+  margin-bottom: 1rem;
+  color: #555;
+  white-space: pre-wrap;
+}
+
+.article-info {
+  font-size: 1rem;
+  color: #777;
+  margin-top: 1rem;
+}
+
+.article-info p {
+  margin: 0.3rem 0;
+}
