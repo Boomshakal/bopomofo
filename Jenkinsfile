@@ -5,6 +5,7 @@ pipeline {
         REPO_URL    = 'https://github.com/Boomshakal/bopomofo.git'
         BRANCH      = 'master'
         DOCKER_REGISTRY = 'registry.cn-hangzhou.aliyuncs.com'  // 替换为您的Docker镜像仓库地址
+        NAMESPACE   = 'registry_own'
         IMAGE_NAME = 'bopomofo'
         IMAGE_TAG = "${env.BUILD_NUMBER}"
     }
@@ -23,9 +24,9 @@ pipeline {
             steps {
                 script {
                     // 构建Docker镜像
-                    sh "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} ."
+                    sh "docker build -t ${DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG} ."
                     // 添加latest标签
-                    sh "docker tag ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest"
+                    sh "docker tag ${DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:latest"
                 }
             }
         }
@@ -39,8 +40,8 @@ pipeline {
                     }
                     
                     // 推送镜像到仓库
-                    sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-                    sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest"
+                    sh "docker push ${DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker push ${DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:latest"
                 }
             }
         }
@@ -54,8 +55,8 @@ pipeline {
             // 清理本地Docker镜像
             script {
                 try {
-                    sh "docker rmi ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} || true"
-                    sh "docker rmi ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest || true"
+                    sh "docker rmi ${DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG} || true"
+                    sh "docker rmi ${DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:latest || true"
                 } catch (Exception e) {
                     echo "清理Docker镜像失败: ${e.message}"
                 }
