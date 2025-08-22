@@ -679,7 +679,7 @@ function App() {
       </main>
 
       <footer className="App-footer">
-        <p>© 2025 注音符号（ㄅㄆㄇㄈ）打字练习</p>
+        <p>© 2025 bopomofo注音(ㄅㄆㄇㄈ)打字练习</p>
       </footer>
     </div>
   );
