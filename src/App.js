@@ -679,7 +679,7 @@ function App() {
       </main>
 
       <footer className="App-footer">
-        <p>© 2023 注音符号打字练习 | 参考 worldofkeyboards.com/bopomofo</p>
+        <p>© 2023 注音符号（ㄅㄆㄇㄈ）打字练习</p>
       </footer>
     </div>
   );
